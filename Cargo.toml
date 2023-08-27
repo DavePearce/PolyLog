@@ -1,0 +1,9 @@
+[package]
+name = "poly_log"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Utilities for working with polynomials."
+repository = "https://github.com/DavePearce/PolyLog"
+
+[dependencies]
