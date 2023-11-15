@@ -4,37 +4,37 @@ pub fn x() -> VecPoly { VecPoly::var(0) }
 pub fn y() -> VecPoly { VecPoly::var(1) }
 
 #[test]
-fn is_zero_01() {
+fn relational_is_zero_01() {
     let p = VecPoly::from(0);
     assert_eq!(p.is_zero(), Some(true));
 }
 
 #[test]
-fn is_zero_02() {
+fn relational_is_zero_02() {
     let p = VecPoly::from(1);
     assert_eq!(p.is_zero(), Some(false));
 }
 
 #[test]
-fn is_zero_03() {
+fn relational_is_zero_03() {
     let p = VecPoly::from(-1);
     assert_eq!(p.is_zero(), Some(false));
 }
 
 #[test]
-fn is_zero_04() {
+fn relational_is_zero_04() {
     let p = x();
     assert_eq!(p.is_zero(), None);
 }
 
 #[test]
-fn is_zero_05() {
+fn relational_is_zero_05() {
     let p = x() + 1;
     assert_eq!(p.is_zero(), Some(false));
 }
 
 #[test]
-fn is_zero_06() {
+fn relational_is_zero_06() {
     let p = x() - 1;
     assert_eq!(p.is_zero(), None);
 }
@@ -42,7 +42,7 @@ fn is_zero_06() {
 // Equality constraints
 
 #[test]
-fn equals_01() {
+fn relational_equals_01() {
     let p1 = VecPoly::from(0);
     let mut c1 = p1.equals(&VecPoly::from(0));
     // Check holds
@@ -50,7 +50,7 @@ fn equals_01() {
 }
 
 #[test]
-fn equals_02() {
+fn relational_equals_02() {
     let p1 = VecPoly::from(1);
     let mut c1 = p1.equals(&VecPoly::from(0));
     // Check doesn't hold
@@ -58,7 +58,7 @@ fn equals_02() {
 }
 
 #[test]
-fn equals_03() {
+fn relational_equals_03() {
     let p1 = x();
     let mut c1 = p1.equals(&VecPoly::from(0));
     let c2 = c1.clone();
@@ -67,14 +67,14 @@ fn equals_03() {
 }
 
 #[test]
-fn equals_04() {
+fn relational_equals_04() {
     let mut c1 = (x()+1).equals(&VecPoly::from(0));
     // Check doesn't hold
     assert_eq!(c1,0.into());
 }
 
 #[test]
-fn not_equals_01() {
+fn relational_not_equals_01() {
     let p1 = VecPoly::from(0);
     let mut c1 = p1.not_equals(&VecPoly::from(0));
     // Check doesn't hold
@@ -82,7 +82,7 @@ fn not_equals_01() {
 }
 
 #[test]
-fn not_equals_02() {
+fn relational_not_equals_02() {
     let p1 = VecPoly::from(1);
     let mut c1 = p1.not_equals(&VecPoly::from(0));
     // Check does hold
@@ -90,7 +90,7 @@ fn not_equals_02() {
 }
 
 #[test]
-fn not_equals_03() {
+fn relational_not_equals_03() {
     let p1 = x();
     let mut c1 = p1.not_equals(&VecPoly::from(0));
     let c2 = c1.clone();
@@ -99,7 +99,7 @@ fn not_equals_03() {
 }
 
 #[test]
-fn not_equals_04() {
+fn relational_not_equals_04() {
     let p1 = x() + 1;
     let mut c1 = p1.not_equals(&VecPoly::from(0));
     // Check does hold
@@ -107,7 +107,7 @@ fn not_equals_04() {
 }
 
 #[test]
-fn less_than_01() {
+fn relational_less_than_01() {
     let p1 = VecPoly::from(0);
     let mut c1 = p1.less_than(&VecPoly::from(0));
     // Check doesn't hold
@@ -115,7 +115,7 @@ fn less_than_01() {
 }
 
 #[test]
-fn less_than_02() {
+fn relational_less_than_02() {
     let p1 = VecPoly::from(1);
     let mut c1 = p1.less_than(&VecPoly::from(0));
     // Check doesn't hold
@@ -123,7 +123,7 @@ fn less_than_02() {
 }
 
 #[test]
-fn less_than_03() {
+fn relational_less_than_03() {
     let p1 = VecPoly::from(0);
     let mut c1 = p1.less_than(&VecPoly::from(1));
     // Check doesn't hold
@@ -131,7 +131,7 @@ fn less_than_03() {
 }
 
 #[test]
-fn less_than_04() {
+fn relational_less_than_04() {
     let p1 = x();
     let mut c1 = p1.less_than(&VecPoly::from(0));
     // Check doesn't hold
@@ -139,7 +139,7 @@ fn less_than_04() {
 }
 
 #[test]
-fn less_than_05() {
+fn relational_less_than_05() {
     let p1 = x() + 1;
     let mut c1 = VecPoly::from(0).less_than(&p1);
     let c2 = c1.clone();
@@ -148,7 +148,7 @@ fn less_than_05() {
 }
 
 #[test]
-fn less_than_or_equals_01() {
+fn relational_less_than_or_equals_01() {
     let p1 = VecPoly::from(0);
     let mut c1 = p1.less_than_or_equals(&VecPoly::from(0));
     // Check doesn't hold
@@ -156,7 +156,7 @@ fn less_than_or_equals_01() {
 }
 
 #[test]
-fn less_than_or_equals_02() {
+fn relational_less_than_or_equals_02() {
     let p1 = VecPoly::from(1);
     let mut c1 = p1.less_than_or_equals(&VecPoly::from(0));
     // Check doesn't hold
@@ -164,7 +164,7 @@ fn less_than_or_equals_02() {
 }
 
 #[test]
-fn less_than_or_equals_03() {
+fn relational_less_than_or_equals_03() {
     let p1 = VecPoly::from(0);
     let mut c1 = p1.less_than_or_equals(&VecPoly::from(1));
     // Check does hold
@@ -172,7 +172,7 @@ fn less_than_or_equals_03() {
 }
 
 #[test]
-fn less_than_or_equals_04() {
+fn relational_less_than_or_equals_04() {
     let p1 = x();
     let mut c1 = p1.less_than_or_equals(&VecPoly::from(1));
     // Check uncertain
@@ -181,7 +181,7 @@ fn less_than_or_equals_04() {
 }
 
 #[test]
-fn less_than_or_equals_05() {
+fn relational_less_than_or_equals_05() {
     let p1 = x();
     let mut c1 = VecPoly::from(0).less_than_or_equals(&p1);
     // Holds
@@ -189,7 +189,7 @@ fn less_than_or_equals_05() {
 }
 
 #[test]
-fn less_than_or_equals_06() {
+fn relational_less_than_or_equals_06() {
     let p1 = x() + 1;
     let mut c1 = VecPoly::from(0).less_than_or_equals(&p1);
     // Holds

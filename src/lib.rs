@@ -96,8 +96,9 @@ pub trait Polynomial : Sized+Clone {
     /// than `1` or `0` then the result is _undefined_ (i.e. could
     /// evaluate to anything).
     fn or(self, rhs: &Self) -> Self {
-	// x + y - xy
-	todo!()
+	// x + y - xy	
+	let tmp = self.clone().mul(rhs);
+	self.add(rhs).sub(&tmp)
     }
 
     /// Construct the logical conjunction of a given `Polynomial` with

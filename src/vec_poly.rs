@@ -173,47 +173,47 @@ impl Polynomial for VecPoly {
     type Field = isize;
 
     fn eval(&self, vals: &[Self::Field]) -> Self::Field {
-	Self::eval(self,vals)
+	VecPoly::eval(self,vals)
     }
 
     fn is_zero(&self) -> Option<bool> {
-	todo!()
+	VecPoly::is_zero(self)
     }
 	
     fn substitute(&self, var: usize, val: &Self) -> Self  {
-	todo!()
+	Self::substitute(self,var,val)
     }
     
     fn neg(self) -> Self  {
-	todo!()
+	Self::neg(self)
     }
 
     fn add(self, rhs: &Self) -> Self  {
-	todo!()
+	Self::add(self,rhs)
     }
 
     fn sub(self, rhs: &Self) -> Self  {
-	todo!()
+	Self::sub(self,rhs)
     }
 
     fn mul(self, rhs: &Self) -> Self  {
-	todo!()
+	Self::mul(self,rhs)
     }
 
     fn div(self, rhs: &Self) -> Self  {
-	todo!()
+	Self::mul(self,rhs)
     }
 
     fn equals(self, rhs: &Self) -> Self  {
-	todo!()
+	Self::equals(self,rhs)
     }
 
     fn less_than(self, rhs: &Self) -> Self  {
-	todo!()
+	Self::less_than(self,rhs)
     }
 
     fn greater_than(self, rhs: &Self) -> Self  {
-	todo!()
+	Self::greater_than(self,rhs)
     }    
 }
 

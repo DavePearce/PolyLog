@@ -6,7 +6,7 @@ pub fn y() -> VecPoly { VecPoly::var(1) }
 // Induction tests
 
 #[test]
-fn constraint_induction_01() {
+fn induction_01() {
     // (x == y) ==> (x+1 == y+1)
     let c1 = x().equals(&y());
     let mut c2 = c1.clone();
@@ -16,7 +16,7 @@ fn constraint_induction_01() {
 }
 
 #[test]
-fn constraint_induction_02() {
+fn induction_02() {
     // (x != y) ==> (x+1 != y+1)
     let c1 = x().not_equals(&y());
     let mut c2 = c1.clone();
@@ -26,7 +26,7 @@ fn constraint_induction_02() {
 }
 
 #[test]
-fn constraint_induction_03() {
+fn induction_03() {
     // (x < y) ==> (x+1 < y+1)
     let c1 = x().less_than(&y());
     let mut c2 = c1.clone();
@@ -36,7 +36,7 @@ fn constraint_induction_03() {
 }
 
 #[test]
-fn constraint_induction_04() {
+fn induction_04() {
     // (x <= y) ==> (x+1 <= y+1)
     let c1 = x().less_than_or_equals(&y());
     let mut c2 = c1.clone();
@@ -46,7 +46,7 @@ fn constraint_induction_04() {
 }
 
 #[test]
-fn constraint_induction_05() {
+fn induction_05() {
     // (x <= 2y) ==> (x+1 <= 2*(y+1))
     let c1 = x().less_than_or_equals(&(y() * 2));
     let mut c2 = c1.clone();

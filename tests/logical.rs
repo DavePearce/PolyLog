@@ -6,7 +6,7 @@ pub fn y() -> VecPoly { VecPoly::var(1) }
 // Conjunctions
 
 #[test]
-fn conjunct_01() {
+fn logical_conjunct_01() {
     let c1 = VecPoly::from(0).equals(&VecPoly::from(0));
     let mut c2 = c1.and(&VecPoly::from(1));
     // Check holds
@@ -14,7 +14,7 @@ fn conjunct_01() {
 }
 
 #[test]
-fn conjunct_02() {
+fn logical_conjunct_02() {
     let c1 = VecPoly::from(1).equals(&VecPoly::from(0));
     let mut c2 = c1.and(&VecPoly::from(1));
     // Check holds
@@ -22,7 +22,7 @@ fn conjunct_02() {
 }
 
 #[test]
-fn conjunct_03() {
+fn logical_conjunct_03() {
     let c1 = VecPoly::from(0).equals(&VecPoly::from(0));
     let c2 = VecPoly::from(1).equals(&VecPoly::from(0));
     let mut c3 = c1.and(&c2);
@@ -31,7 +31,7 @@ fn conjunct_03() {
 }
 
 #[test]
-fn conjunct_04() {
+fn logical_conjunct_04() {
     let c1 = VecPoly::from(1).equals(&VecPoly::from(0));
     let c2 = VecPoly::from(0).equals(&VecPoly::from(0));
     let mut c3 = c1.and(&c2);
@@ -40,7 +40,7 @@ fn conjunct_04() {
 }
 
 #[test]
-fn conjunct_05() {
+fn logical_conjunct_05() {
     let c1 = x().equals(&VecPoly::from(0));
     let c2 = VecPoly::from(0).equals(&VecPoly::from(0));
     let mut c3 = c1.clone().and(&c2);
@@ -51,7 +51,7 @@ fn conjunct_05() {
 // Disjunctions
 
 #[test]
-fn disjunct_01() {
+fn logical_disjunct_01() {
     let c1 = VecPoly::from(0).equals(&VecPoly::from(0));
     let mut c2 = c1.or(&VecPoly::from(0));
     // Check holds
@@ -59,7 +59,7 @@ fn disjunct_01() {
 }
 
 #[test]
-fn disjunct_02() {
+fn logical_disjunct_02() {
     let c1 = VecPoly::from(1).equals(&VecPoly::from(0));
     let mut c2 = c1.or(&VecPoly::from(0));
     // Check holds
@@ -67,7 +67,7 @@ fn disjunct_02() {
 }
 
 #[test]
-fn disjunct_03() {
+fn logical_disjunct_03() {
     let c1 = VecPoly::from(0).equals(&VecPoly::from(0));
     let c2 = VecPoly::from(1).equals(&VecPoly::from(0));
     let mut c3 = c1.or(&c2);
@@ -76,7 +76,7 @@ fn disjunct_03() {
 }
 
 #[test]
-fn disjunct_04() {
+fn logical_disjunct_04() {
     let c1 = VecPoly::from(1).equals(&VecPoly::from(0));
     let c2 = VecPoly::from(0).equals(&VecPoly::from(0));
     let mut c3 = c1.or(&c2);
@@ -85,7 +85,7 @@ fn disjunct_04() {
 }
 
 #[test]
-fn disjunct_05() {
+fn logical_disjunct_05() {
     let c1 = x().equals(&VecPoly::from(0));
     let c2 = VecPoly::from(0).equals(&VecPoly::from(0));
     let mut c3 = c1.or(&c2);
@@ -96,14 +96,14 @@ fn disjunct_05() {
 // Not
 
 #[test]
-fn not_01() {
+fn logical_not_01() {
     let c1 = x().equals(&VecPoly::from(0));
     let c2 = x().not_equals(&VecPoly::from(0));    
     assert_eq!(c1.not(),c2);
 }
 
 #[test]
-fn not_02() {
+fn logical_not_02() {
     let c1 = x().equals(&VecPoly::from(0));
     let c2 = x().not_equals(&VecPoly::from(0));        
     assert_eq!(c2.not(),c1);
