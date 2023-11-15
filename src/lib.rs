@@ -7,7 +7,7 @@ pub use vec_poly::*;
 // ===================================================================
 
 /// An _extended_ polynomial.
-pub trait Polynomial : Sized {
+pub trait Polynomial : Sized+Clone {
     /// The field over which this polynomial works.
     type Field;
 	
@@ -44,16 +44,50 @@ pub trait Polynomial : Sized {
     /// Divide a given `Polynomial` into this polynomial.
     fn div(self, rhs: &Self) -> Self;
 
-    /// Equate a given `Polynomial` with this polynomial.
+    /// Constrain a given `Polynomial` with this polynomial.
     /// Specifically, the resulting polynomial evaluates to `1` when
     /// they are equal and `0` otherwise.
-    fn equate(self, rhs: &Self) -> Self;
+    fn equals(self, rhs: &Self) -> Self;
 
-    /// Constraint a given `Polynomial` to be above this polynomial.
+    /// Constrain a given `Polynomial` to be not equal to this
+    /// polynomial.  Specifically, the resulting polynomial evaluates
+    /// to `1` when they are _not_ equal and `0` otherwise.
+    fn not_equals(self, rhs: &Self) -> Self {
+	self.equals(rhs).not()
+    }
+    
+    /// Constrain a given `Polynomial` to be above this polynomial.
     /// Specifically, the resulting polynomial evaluates to `1` when
-    /// they are equal and `0` otherwise.
+    /// this is true and `0` otherwise.
     fn less_than(self, rhs: &Self) -> Self;
 
+    /// Constrain a given `Polynomial` to be above or equal to this
+    /// polynomial.  Specifically, the resulting polynomial evaluates
+    /// to `1` when this is true and `0` otherwise.
+    fn less_than_or_equals(self, rhs: &Self) -> Self {
+	// Default implementation.  This is perhaps not super
+	// efficient as it may perform more memory allocations than
+	// necessary.
+	let tmp = self.clone().equals(rhs);
+	self.less_than(rhs).or(&tmp)
+    }
+
+    /// Constrain a given `Polynomial` to be below this polynomial.
+    /// Specifically, the resulting polynomial evaluates to `1` when
+    /// this is true and `0` otherwise.
+    fn greater_than(self, rhs: &Self) -> Self;
+
+    /// Constrain a given `Polynomial` to be below or equal to this
+    /// polynomial.  Specifically, the resulting polynomial evaluates
+    /// to `1` when this is true and `0` otherwise.
+    fn greater_than_or_equals(self, rhs: &Self) -> Self {
+	// Default implementation.  This is perhaps not super
+	// efficient as it may perform more memory allocations than
+	// necessary.
+	let tmp = self.clone().equals(rhs);
+	self.greater_than(rhs).or(&tmp)
+    }
+    
     /// Construct the logical disjunction of a given `Polynomial` with
     /// this polynomial.  Specifically, the resulting polynomial: (i)
     /// evaluates to `1` when either polynomial evaluates to `1`; and
@@ -66,6 +100,17 @@ pub trait Polynomial : Sized {
 	todo!()
     }
 
+    /// Construct the logical conjunction of a given `Polynomial` with
+    /// this polynomial.  Specifically, the resulting polynomial: (i)
+    /// evaluates to `1` when both polynomials evaluate to `1`; and
+    /// (ii) `0` when either polynonmial evaluate to `0`.  Observe
+    /// that, should either polynomial evaluate to something other
+    /// than `1` or `0` then the result is _undefined_ (i.e. could
+    /// evaluate to anything).
+    fn and(self, rhs: &Self) -> Self {
+	self.mul(rhs)
+    }
+    
     /// Construct the logical inversion (i.e. not) of this
     /// `Polynomial`.  Specifically, the resulting polynomial: (i)
     /// evaluates to `1` when the original evaluates to `0`; and (ii)

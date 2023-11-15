@@ -204,13 +204,17 @@ impl Polynomial for VecPoly {
 	todo!()
     }
 
-    fn equate(self, rhs: &Self) -> Self  {
+    fn equals(self, rhs: &Self) -> Self  {
 	todo!()
     }
 
     fn less_than(self, rhs: &Self) -> Self  {
 	todo!()
     }
+
+    fn greater_than(self, rhs: &Self) -> Self  {
+	todo!()
+    }    
 }
 
 // Formatting
