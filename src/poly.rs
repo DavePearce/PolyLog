@@ -1,7 +1,5 @@
 use std::fmt;
 
-use super::constraint::Constraint;
-
 // =============================================================================
 // Polynomial
 // =============================================================================
@@ -143,29 +141,29 @@ impl Polynomial {
 	self
     }
 
-    /// Construct a constraint enforcing the equality of two
-    /// polynomials.
-    pub fn equals(mut self, rhs: Polynomial) -> Constraint {
-        Constraint::eq_zero(self.sub(&rhs))
-    }
+    // /// Construct a constraint enforcing the equality of two
+    // /// polynomials.
+    // pub fn equals(mut self, rhs: Polynomial) -> Constraint {
+    //     Constraint::eq_zero(self.sub(&rhs))
+    // }
 
-    /// Construct a constraint enforcing the non-equality of two
-    /// polynomials.
-    pub fn not_equals(mut self, rhs: Polynomial) -> Constraint {
-        Constraint::neq_zero(self.sub(&rhs))
-    }
+    // /// Construct a constraint enforcing the non-equality of two
+    // /// polynomials.
+    // pub fn not_equals(mut self, rhs: Polynomial) -> Constraint {
+    //     Constraint::neq_zero(self.sub(&rhs))
+    // }
 
-    /// Construct a constraint enforcing that one polynomial is less
-    /// than another.
-    pub fn less_than(mut self, rhs: Polynomial) -> Constraint {
-        Constraint::gt_zero(rhs.sub(&self))
-    }
+    // /// Construct a constraint enforcing that one polynomial is less
+    // /// than another.
+    // pub fn less_than(mut self, rhs: Polynomial) -> Constraint {
+    //     Constraint::gt_zero(rhs.sub(&self))
+    // }
 
-    /// Construct a constraint enforcing that one polynomial is less
-    /// than or equal to another.
-    pub fn less_than_or_equals(mut self, rhs: Polynomial) -> Constraint {
-        Constraint::gteq_zero(rhs.sub(&self))
-    }
+    // /// Construct a constraint enforcing that one polynomial is less
+    // /// than or equal to another.
+    // pub fn less_than_or_equals(mut self, rhs: Polynomial) -> Constraint {
+    //     Constraint::gteq_zero(rhs.sub(&self))
+    // }
 
     /// Evaluate this `Polynomial` at a given point.
     pub fn eval(&self, vals: &[usize]) -> isize {
