@@ -1,19 +1,26 @@
-mod poly;
+mod vec_poly;
 
-pub use poly::*;
+pub use vec_poly::*;
 
 // ===================================================================
 // Polynomial
 // ===================================================================
 
 /// An _extended_ polynomial.
-pub trait Polynomial {
+pub trait Polynomial : Sized {
     /// The field over which this polynomial works.
     type Field;
 	
     /// Evaluate this `Polynomial` at a given point.    
     fn eval(&self, vals: &[Self::Field]) -> Self::Field;
 
+    /// Determine whether or not this polynomial could be zero (or
+    /// not).  For example, `2x+1` cannot be zero (i.e. given that `x`
+    /// cannot be negative).  However, `x - y` can be zero (e.g. when
+    /// `x=y`).  Note: just because this polynomial could evaluate to
+    /// zero, it does not mean that it will.
+    fn is_zero(&self) -> Option<bool>;
+	
     /// Substitute all occurrenes of a given variable in `self` with a
     /// given `Polynomial`.  For example, substituting `x:=x+1` into
     /// `2x + xy` gives `2+2x+xy+y`.
@@ -21,7 +28,7 @@ pub trait Polynomial {
     
     /// Negate this polynomial.  This is achieved by negating each
     /// term within the polynomial.
-    fn negate(self) -> Self;
+    fn neg(self) -> Self;
 
     /// Add a given `Polynomial` onto this polynomial.  For example,
     /// adding `x+2` to `2x+1` gives `3x+3`.
@@ -54,7 +61,10 @@ pub trait Polynomial {
     /// that, should either polynomial evaluate to something other
     /// than `1` or `0` then the result is _undefined_ (i.e. could
     /// evaluate to anything).
-    fn or(self, rhs: &Self) -> Self;
+    fn or(self, rhs: &Self) -> Self {
+	// x + y - xy
+	todo!()
+    }
 
     /// Construct the logical inversion (i.e. not) of this
     /// `Polynomial`.  Specifically, the resulting polynomial: (i)
@@ -63,5 +73,8 @@ pub trait Polynomial {
     /// that, should the original polynomial evaluate to something
     /// other than `1` or `0` then the result is _undefined_
     /// (i.e. could evaluate to anything).
-    fn not(self) -> Self;
+    fn not(self) -> Self {
+	// 1 - x
+	todo!()
+    }
 }

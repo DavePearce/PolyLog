@@ -1,16 +1,17 @@
 use std::fmt;
+use crate::Polynomial;
 
 // =============================================================================
 // Polynomial
 // =============================================================================
 
 #[derive(Clone,Debug,PartialEq)]
-pub struct Polynomial {
+pub struct VecPoly {
     terms: Vec<Term>
 }
 
-impl Polynomial {
-    pub fn var(vindex: usize) -> Polynomial {
+impl VecPoly {
+    pub fn var(vindex: usize) -> VecPoly {
 	let term = Term::new(1,&[vindex]);
 	Self{terms: vec![term]}
     }
@@ -62,71 +63,33 @@ impl Polynomial {
 	}
     }
 
-    /// Determine whether or not this polynomial always evaluates to
-    /// something above zero (or not).
-    pub fn above_zero(&self) -> Option<bool> {
-	// Check whether this is zero (or not)
-	if self.terms.len() == 0 { Some(false) }
-	// Check whether cannot be zero
-	else if self.sign() == Some(true) && self.constant() != 0 {
-            // Has positive sign and a non-zero constant.  Therefore,
-            // must be above zero.
-	    Some(true)
-	} else if self.sign() == Some(false) {
-            // Has negative sign.  Therefore, cannot be above zero.
-            Some(false)
-        } else {
-	    // Unknown whether above zero or not
-	    None
-	}
-    }
-
-    /// Determine whether or not this polynomial always evaluates to
-    /// something below zero (or not).
-    pub fn below_zero(&self) -> Option<bool> {
-	// Check whether this is zero (or not)
-	if self.terms.len() == 0 { Some(false) }
-	// Check whether cannot be zero
-	else if self.sign() == Some(false) && self.constant() != 0 {
-            // Has negative sign and a non-zero constant.  Therefore,
-            // must be below zero.
-	    Some(true)
-	} else if self.sign() == Some(true) {
-            // Has positive sign.  Therefore, cannot be below zero.
-            Some(false)
-        } else {
-	    // Unknown whether above zero or not
-	    None
-	}
-    }
-
     /// Negate this polynomial.  This is achieved by negating each
     /// term within the polynomial.
-    pub fn negate(mut self) -> Self {
+    pub fn neg(mut self) -> Self {
         for t in &mut self.terms {
             t.negate();
         }
         self
     }
 
-    /// Add a given `Polynomial` onto this polynomial.  For example,
+    /// Add a given `VecPoly` onto this polynomial.  For example,
     /// adding `x+2` to `2x+1` gives `3x+3`.
-    pub fn add(mut self, rhs: &Polynomial) -> Self {
+    pub fn add(mut self, rhs: &VecPoly) -> Self {
         for t in &rhs.terms {
             self.internal_add(t);
         }
         self
     }
 
-    /// Subtract a given `Polynomial` from this polynomial.
-    pub fn sub(mut self, rhs: &Polynomial) -> Self {
+    /// Subtract a given `VecPoly` from this polynomial.
+    pub fn sub(mut self, rhs: &VecPoly) -> Self {
         for t in &rhs.terms {
             self.internal_sub(t);
         }
         self
     }
 
-    pub fn mul(mut self, rhs: &Polynomial) -> Self {
+    pub fn mul(mut self, rhs: &VecPoly) -> Self {
 	let mut ts = Vec::new();
 	// Swap them
 	std::mem::swap(&mut ts, &mut self.terms);
@@ -141,32 +104,8 @@ impl Polynomial {
 	self
     }
 
-    // /// Construct a constraint enforcing the equality of two
-    // /// polynomials.
-    // pub fn equals(mut self, rhs: Polynomial) -> Constraint {
-    //     Constraint::eq_zero(self.sub(&rhs))
-    // }
-
-    // /// Construct a constraint enforcing the non-equality of two
-    // /// polynomials.
-    // pub fn not_equals(mut self, rhs: Polynomial) -> Constraint {
-    //     Constraint::neq_zero(self.sub(&rhs))
-    // }
-
-    // /// Construct a constraint enforcing that one polynomial is less
-    // /// than another.
-    // pub fn less_than(mut self, rhs: Polynomial) -> Constraint {
-    //     Constraint::gt_zero(rhs.sub(&self))
-    // }
-
-    // /// Construct a constraint enforcing that one polynomial is less
-    // /// than or equal to another.
-    // pub fn less_than_or_equals(mut self, rhs: Polynomial) -> Constraint {
-    //     Constraint::gteq_zero(rhs.sub(&self))
-    // }
-
-    /// Evaluate this `Polynomial` at a given point.
-    pub fn eval(&self, vals: &[usize]) -> isize {
+    /// Evaluate this `VecPoly` at a given point.
+    pub fn eval(&self, vals: &[isize]) -> isize {
 	let mut acc = 0;
 	for t in &self.terms {
 	    acc += t.eval(vals);
@@ -175,9 +114,9 @@ impl Polynomial {
     }
 
     /// Substitute all occurrenes of a given variable in `self` with a
-    /// given `Polynomial`.  For example, substituting `x:=x+1` into
+    /// given `VecPoly`.  For example, substituting `x:=x+1` into
     /// `2x + xy` gives `2+2x+xy+y`.
-    pub fn substitute(&self, var: usize, val: &Polynomial) -> Polynomial {
+    pub fn substitute(&self, var: usize, val: &VecPoly) -> VecPoly {
         let mut r = Self{terms: Vec::new()};
         //
         for t in &self.terms {
@@ -187,7 +126,7 @@ impl Polynomial {
         //
         r
     }
-
+    
     // Add a single term into this polynomial.
     fn internal_add(&mut self, term: &Term) {
         for (i,t) in &mut self.terms.iter_mut().enumerate() {
@@ -227,10 +166,57 @@ impl Polynomial {
     }
 }
 
+// Polynomial
+// -----------------------------------------------------------------------------
+
+impl Polynomial for VecPoly {
+    type Field = isize;
+
+    fn eval(&self, vals: &[Self::Field]) -> Self::Field {
+	Self::eval(self,vals)
+    }
+
+    fn is_zero(&self) -> Option<bool> {
+	todo!()
+    }
+	
+    fn substitute(&self, var: usize, val: &Self) -> Self  {
+	todo!()
+    }
+    
+    fn neg(self) -> Self  {
+	todo!()
+    }
+
+    fn add(self, rhs: &Self) -> Self  {
+	todo!()
+    }
+
+    fn sub(self, rhs: &Self) -> Self  {
+	todo!()
+    }
+
+    fn mul(self, rhs: &Self) -> Self  {
+	todo!()
+    }
+
+    fn div(self, rhs: &Self) -> Self  {
+	todo!()
+    }
+
+    fn equate(self, rhs: &Self) -> Self  {
+	todo!()
+    }
+
+    fn less_than(self, rhs: &Self) -> Self  {
+	todo!()
+    }
+}
+
 // Formatting
 // -----------------------------------------------------------------------------
 
-impl fmt::Display for Polynomial {
+impl fmt::Display for VecPoly {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 	for (i,t) in self.terms.iter().enumerate() {
 	    if i != 0 { write!(f,"+")?; }
@@ -241,7 +227,7 @@ impl fmt::Display for Polynomial {
 }
 // Coercions
 // -----------------------------------------------------------------------------
-impl From<usize> for Polynomial {
+impl From<usize> for VecPoly {
     fn from(val: usize) -> Self {
 	if val == 0 {
 	    Self{terms: Vec::new()}
@@ -252,7 +238,7 @@ impl From<usize> for Polynomial {
     }
 }
 
-impl From<i32> for Polynomial {
+impl From<i32> for VecPoly {
     fn from(val: i32) -> Self {
 	if val == 0 {
 	    Self{terms: Vec::new()}
@@ -265,16 +251,16 @@ impl From<i32> for Polynomial {
 
 // Operator overloading
 // -----------------------------------------------------------------------------
-impl std::ops::Add<usize> for Polynomial {
+impl std::ops::Add<usize> for VecPoly {
     type Output = Self;
 
     fn add(self, rhs: usize) -> Self {
-	let r = Polynomial::from(rhs);
+	let r = VecPoly::from(rhs);
 	self.add(&r)
     }
 }
 
-impl std::ops::Add for Polynomial {
+impl std::ops::Add for VecPoly {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self {
@@ -282,16 +268,16 @@ impl std::ops::Add for Polynomial {
     }
 }
 
-impl std::ops::Sub<usize> for Polynomial {
+impl std::ops::Sub<usize> for VecPoly {
     type Output = Self;
 
     fn sub(self, rhs: usize) -> Self {
-	let r = Polynomial::from(rhs);
+	let r = VecPoly::from(rhs);
 	self.sub(&r)
     }
 }
 
-impl std::ops::Sub for Polynomial {
+impl std::ops::Sub for VecPoly {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self {
@@ -299,25 +285,25 @@ impl std::ops::Sub for Polynomial {
     }
 }
 
-impl std::ops::Mul<usize> for Polynomial {
+impl std::ops::Mul<usize> for VecPoly {
     type Output = Self;
 
     fn mul(self, rhs: usize) -> Self {
-	let r = Polynomial::from(rhs);
+	let r = VecPoly::from(rhs);
 	self.mul(&r)
     }
 }
 
-impl std::ops::Mul for Polynomial {
+impl std::ops::Mul for VecPoly {
     type Output = Self;
 
-    fn mul(self, rhs: Polynomial) -> Self {
+    fn mul(self, rhs: VecPoly) -> Self {
 	self.mul(&rhs)
     }
 }
 
 // =============================================================================
-// Polynomial Term
+// VecPoly Term
 // =============================================================================
 #[derive(Clone,Debug,Eq,Ord,PartialEq,PartialOrd)]
 pub struct Term {
@@ -341,15 +327,15 @@ impl Term {
 	self
     }
 
-    pub fn eval(&self, vals: &[usize]) -> isize {
+    pub fn eval(&self, vals: &[isize]) -> isize {
 	let mut r = self.coefficient;
 	for v in &self.vars {
-	    r *= vals[*v] as isize;
+	    r *= vals[*v];
 	}
 	r
     }
 
-    pub fn substitute(&self, var: usize, val: &Polynomial) -> Polynomial {
+    pub fn substitute(&self, var: usize, val: &VecPoly) -> VecPoly {
         let mut nvars = Vec::new();
         let mut count = 0;
         // Construct inner term.
@@ -362,7 +348,7 @@ impl Term {
         }
         //
         let nterm = Self{coefficient: self.coefficient, vars: nvars};
-        let mut r = Polynomial{terms: vec![nterm]};
+        let mut r = VecPoly{terms: vec![nterm]};
         // Multiply it all out
         for i in 0..count {
             r = r * val.clone();
