@@ -104,6 +104,10 @@ impl VecPoly {
 	self
     }
 
+    pub fn terms(&self) -> &[Term] {
+	&self.terms
+    }
+    
     /// Evaluate this `VecPoly` at a given point.
     pub fn eval(&self, vals: &[isize]) -> isize {
 	let mut acc = 0;
@@ -320,6 +324,14 @@ impl Term {
 	Self{coefficient, vars: vars.to_vec()}
     }
 
+    pub fn coefficient(&self) -> isize {
+	self.coefficient
+    }
+
+    pub fn vars(&self) -> &[usize] {
+	&self.vars
+    }
+    
     pub fn negate(&mut self) {
         self.coefficient = -self.coefficient;
     }
