@@ -61,7 +61,7 @@ impl Parser {
         // Convert string slice into Vec<char>
         let lexer = Lexer::new(content);
         //
-        let env = Environment::new();
+        let env = Environment::new(&[]);
         // Done
         Self{lexer, env, polys: Vec::new()}
     }
@@ -79,6 +79,7 @@ impl Parser {
         let lookahead = self.lexer.lookahead(0);
         //
         match lookahead.kind {
+            TokenType::ForAll => self.parse_decl_forall(),	    
             _ => {
                 self.parse_decl_assert()
             }
@@ -95,6 +96,36 @@ impl Parser {
 	self.polys.push(expr);
 	// Done
 	Ok(())
+    }
+
+    fn parse_decl_forall(&mut self) -> Result<(),()> {
+        self.lexer.expect(TokenType::ForAll);
+        // Parse quantified variables
+        let params = self.parse_decl_params()?;
+        // Allocate params within environment
+        self.env = Environment::new(&params);
+	// Parse asserted expression
+	let expr = self.parse_expr()?;
+	// Parse asserted expression
+	self.polys.push(expr);
+	// Done
+	Ok(())
+    }
+
+    fn parse_decl_params(&mut self) -> Result<Vec<String>,()> {
+        let mut params = Vec::new();
+        self.lexer.expect(TokenType::LeftBrace);
+        let mut lookahead = self.lexer.lookahead(0);
+        //
+        while lookahead.kind != TokenType::RightBrace {
+            if !params.is_empty() { self.lexer.expect(TokenType::Comma); }
+            let var = self.parse_identifier()?;
+            params.push(var);
+            lookahead = self.lexer.lookahead(0);
+        }
+        // Done
+        self.lexer.expect(TokenType::RightBrace);
+        Ok(params)
     }
     
     // ===============================================================
@@ -119,7 +150,7 @@ impl Parser {
             match self.lexer.match_any(tokens) {
                 Some(t) => {
 		    let rhs = self.parse_expr_binary(level-1)?;
-		    poly = Self::apply_binary_expr(t.kind,poly,rhs);
+		    poly = self.apply_binary_expr(t.kind,poly,rhs);
 	            
                 }
                 None => {}
@@ -135,7 +166,7 @@ impl Parser {
         match lookahead.kind {
             TokenType::BoolLiteral(v) => self.parse_literal_bool(v),
             TokenType::LeftBrace => self.parse_expr_braced(),
-            //TokenType::Identifier => self.parse_expr_varaccess(),
+            TokenType::Identifier => self.parse_expr_varaccess(),
             TokenType::IntLiteral => self.parse_literal_int(),
             // TokenType::Shreak => self.parse_expr_not(),
             // TokenType::If => self.parse_expr_ifelse(),
@@ -151,6 +182,16 @@ impl Parser {
         self.lexer.expect(TokenType::RightBrace);
 	Ok(p)
     }
+
+    fn parse_expr_varaccess(&mut self) -> Result<VecPoly,()> {
+        // Match variable name
+        let id = self.lexer.expect(TokenType::Identifier);
+        let name = self.lexer.to_string(&id);
+        // Lookup variable index
+        let idx = self.env.lookup(&name).unwrap();
+	// Done
+        Ok(VecPoly::var(idx))
+    }    
 
     // ===============================================================
     // Literals
@@ -179,12 +220,30 @@ impl Parser {
         Ok(self.lexer.to_string(&ith))
     }
 
-    fn apply_binary_expr(t: TokenType, lhs: VecPoly, rhs: VecPoly) -> VecPoly {
+    fn apply_binary_expr(&mut self, t: TokenType, lhs: VecPoly, rhs: VecPoly) -> VecPoly {
 	match t {
 	    // Logical
 	    TokenType::AmpersandAmpersand => lhs.add(&rhs),
 	    TokenType::BarBar => lhs.mul(&rhs),
-	    // Relational
+	    // Relationales
+	    TokenType::EqualsEquals => lhs.sub(&rhs),
+	    // TokenType::ShreakEquals,
+	    TokenType::LeftAngle => {
+		let var = &VecPoly::var(self.env.fresh());
+		lhs.add(&var).add(&VecPoly::from(1)).sub(&rhs)
+	    }
+	    TokenType::LeftAngleEquals => {
+		let var = &VecPoly::var(self.env.fresh());
+		lhs.add(&var).sub(&rhs)
+	    }
+	    TokenType::RightAngle => {
+		let var = &VecPoly::var(self.env.fresh());
+		lhs.sub(&rhs.add(var).add(&VecPoly::from(1)))
+	    }
+	    TokenType::RightAngleEquals => {
+		let var = &VecPoly::var(self.env.fresh());
+		lhs.sub(&rhs.add(var))
+	    }
 	    // Arithmetic
 	    TokenType::Minus => lhs.sub(&rhs),
 	    TokenType::Plus => lhs.add(&rhs),
@@ -199,39 +258,32 @@ impl Parser {
 // ===================================================================
 
 struct Environment {
-    /// Maps functions to their indices
-    fn_bindings: HashMap<String,(usize,usize)>,
-    /// Maps variables to their indices
-    var_bindings: HashMap<String,usize>
+    /// Maps (universally quantified) variables to their indices
+    bindings: HashMap<String,usize>,
+    /// Identifies the next variable fresh variable.
+    fresh_index: usize
 }
 
 impl Environment {
-    pub fn new() -> Self {
-        let fn_bindings = HashMap::new();
-        let var_bindings = HashMap::new();
-        Self{fn_bindings,var_bindings}
-    }
-
-    pub fn alloc_fn(&mut self, name: &str, arity: usize) {
-        // Determine index of this function
-        let index = self.fn_bindings.len();
-        //
-        self.fn_bindings.insert(name.to_string(),(index,arity));
-    }
-
-    pub fn alloc_vars(&mut self, vars: &[String]) {
-        self.var_bindings.clear();
-        //
+    pub fn new(vars: &[String]) -> Self {
+        let mut bindings = HashMap::new();
+	//
         for (i,n) in vars.iter().enumerate() {
-            self.var_bindings.insert(n.to_string(),i);
+            bindings.insert(n.to_string(),i);
         }
+	//
+        Self{bindings, fresh_index: vars.len()}
+    }
+    
+    /// Lookup a (universally quantified) variable.
+    pub fn lookup(&self, name: &str) -> Option<usize> {
+	self.bindings.get(name).copied()
     }
 
-    pub fn lookup_fn(&self, name: &str) -> Option<(usize,usize)> {
-	self.fn_bindings.get(name).copied()
-    }
-
-    pub fn lookup_var(&self, name: &str) -> Option<usize> {
-	self.var_bindings.get(name).copied()
+    /// Allocate a fresh (existential) variable.
+    pub fn fresh(&mut self) -> usize {
+	let idx = self.fresh_index;
+	self.fresh_index += 1;
+	idx
     }
 }

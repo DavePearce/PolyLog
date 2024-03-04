@@ -6,4 +6,7 @@ license = "Apache-2.0"
 description = "Utilities for working with polynomials."
 repository = "https://github.com/DavePearce/PolyLog"
 
+[[bin]]
+name = "polyc"
+
 [dependencies]

@@ -1,3 +1,4 @@
 1+1
 true && false
 true && true
+forall(x) x < 10 || x >= 10
