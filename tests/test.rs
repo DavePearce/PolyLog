@@ -1,19 +1,13 @@
-use poly_log::{VecPoly,Term};
+use poly_log::{Parser,VecPoly,Term};
 
 pub fn x() -> VecPoly { VecPoly::var(0) }
 pub fn m() -> VecPoly { VecPoly::var(1) }
 pub fn n() -> VecPoly { VecPoly::var(2) }
 
 // evaluations
-
-// Construct `x + m == 10`
-fn x_lt_10() -> VecPoly {
-    x().add(&m()).sub(&VecPoly::from(9))
-}
-
-// Construct `x == 11 + n`
-fn x_ge_10() -> VecPoly {
-    x().sub(&n()).sub(&VecPoly::from(10))
+fn parse(contents: &str) -> VecPoly {
+    let mut parser = Parser::new(&contents);
+    parser.parse_poly().unwrap()
 }
 
 // Construct `x+1`
@@ -23,29 +17,29 @@ fn x_p1() -> VecPoly {
 
 #[test]
 fn eg_01() {
-    let p = x_lt_10();
-    assert_eq!(p.eval(&[0,9,0]), 0);    
-    assert_eq!(p.eval(&[1,8,0]), 0);
-    assert_eq!(p.eval(&[2,7,0]), 0);
-    assert_eq!(p.eval(&[3,6,0]), 0);
-    assert_eq!(p.eval(&[4,5,0]), 0);
-    assert_eq!(p.eval(&[5,4,0]), 0);
-    assert_eq!(p.eval(&[10,0,0]), 1);
-    assert_eq!(p.eval(&[11,0,0]), 2);
-    assert_eq!(p.eval(&[11,1,0]), 3);
+    let p = parse("forall(x) x < 10");
+    assert_eq!(p.eval(&[0,9]), 0);    
+    assert_eq!(p.eval(&[1,8]), 0);
+    assert_eq!(p.eval(&[2,7]), 0);
+    assert_eq!(p.eval(&[3,6]), 0);
+    assert_eq!(p.eval(&[4,5]), 0);
+    assert_eq!(p.eval(&[5,4]), 0);
+    assert_eq!(p.eval(&[10,0]), 1);
+    assert_eq!(p.eval(&[11,0]), 2);
+    assert_eq!(p.eval(&[11,1]), 3);
     
 }
 
 #[test]
 fn eg_02() {
-    let p = x_ge_10();
-    assert_eq!(p.eval(&[10,0,0]), 0);
-    assert_eq!(p.eval(&[11,0,1]), 0);    
+    let p = parse("forall(x) x >= 10");    
+    assert_eq!(p.eval(&[10,0]), 0);
+    assert_eq!(p.eval(&[11,1]), 0);    
 }
 
 #[test]
 fn eg_induct() {
-    let p1 = x_lt_10().mul(&x_ge_10());
+    let p1 = parse("forall(x) x < 10 || x > 10");
     let p2 = p1.substitute(0,&x_p1());
     let mp1 = m().sub(&VecPoly::from(1));
     let np1 = n().add(&VecPoly::from(1));

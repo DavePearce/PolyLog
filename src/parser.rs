@@ -50,9 +50,7 @@ pub struct Parser {
     /// Character sequence being parsed
     lexer: Lexer,
     /// Environment used for determining indices
-    env: Environment,
-    /// Bytecode program being constructed
-    polys: Vec<VecPoly>
+    env: Environment
 }
 
 impl Parser {
@@ -63,19 +61,21 @@ impl Parser {
         //
         let env = Environment::new(&[]);
         // Done
-        Self{lexer, env, polys: Vec::new()}
+        Self{lexer, env}
     }
 
     /// Parse a line of text into a term.
-    pub fn parse(mut self) -> Result<Vec<VecPoly>,()> {
+    pub fn parse_all(mut self) -> Result<Vec<VecPoly>,()> {
+	let mut polys = Vec::new();
+	//
         while self.lexer.lookahead(0) != EOF {
-	    self.parse_declaration()?;
+	    polys.push(self.parse_poly()?);
         }
         //
-        Ok(self.polys)
+        Ok(polys)
     }
 
-    fn parse_declaration(&mut self) -> Result<(),()> {
+    pub fn parse_poly(&mut self) -> Result<VecPoly,()> {
         let lookahead = self.lexer.lookahead(0);
         //
         match lookahead.kind {
@@ -90,26 +90,18 @@ impl Parser {
     // Declarations
     // ===============================================================
 
-    fn parse_decl_assert(&mut self) -> Result<(),()> {
-	let expr = self.parse_expr()?;
-	// Parse asserted expression
-	self.polys.push(expr);
-	// Done
-	Ok(())
+    fn parse_decl_assert(&mut self) -> Result<VecPoly,()> {
+	self.parse_expr()
     }
 
-    fn parse_decl_forall(&mut self) -> Result<(),()> {
+    fn parse_decl_forall(&mut self) -> Result<VecPoly,()> {
         self.lexer.expect(TokenType::ForAll);
         // Parse quantified variables
         let params = self.parse_decl_params()?;
         // Allocate params within environment
         self.env = Environment::new(&params);
 	// Parse asserted expression
-	let expr = self.parse_expr()?;
-	// Parse asserted expression
-	self.polys.push(expr);
-	// Done
-	Ok(())
+	self.parse_expr()
     }
 
     fn parse_decl_params(&mut self) -> Result<Vec<String>,()> {

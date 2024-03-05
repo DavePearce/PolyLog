@@ -9,7 +9,7 @@ fn main() {
     //
     let parser = Parser::new(&contents);
     //
-    let constraints = parser.parse().unwrap();
+    let constraints = parser.parse_all().unwrap();
     //
     for c in constraints {
 	println!("{c}");
